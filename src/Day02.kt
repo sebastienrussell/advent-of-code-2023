@@ -30,11 +30,7 @@ fun main() {
         Cube(Cube.Color.BLUE, 14)
     ).println()
 
-    check(
-        part2(
-            testInput,
-        ) == 2286
-    )
+    check(part2(testInput) == 2286)
 
 
     part2(input).println()
@@ -82,36 +78,22 @@ fun possibleGamesWith(games: List<Game>, vararg cubes: Cube): List<Game> =
         }
     }
 
-fun minimumSetOfCubesNeededPerGame(games: List<Game>): List<Triple<Cube, Cube, Cube>> {
-    return games.map { game ->
-        var minRed = 0
-        var minGreen = 0
-        var minBlue = 0
-        game.setsOfCubePulled.forEach { pull ->
-            pull.forEach { cube ->
-                when (cube.color) {
-                    Cube.Color.RED -> if (cube.count > minRed)
-                        minRed = cube.count
-
-                    Cube.Color.BLUE -> if (cube.count > minBlue)
-                        minBlue = cube.count
-
-                    Cube.Color.GREEN -> if (cube.count > minGreen)
-                        minGreen = cube.count
-                }
-            }
-        }
+fun minimumSetOfCubesNeededPerGame(games: List<Game>): List<Triple<Cube, Cube, Cube>> =
+    games.map { game ->
         Triple(
             Cube(
                 Cube.Color.RED,
-                count = minRed
+                count = game.getMaxCountOfCube(Cube.Color.RED)
             ), Cube(
                 Cube.Color.BLUE,
-                count = minBlue
+                count = game.getMaxCountOfCube(Cube.Color.BLUE)
             ), Cube(
                 Cube.Color.GREEN,
-                count = minGreen
+                count = game.getMaxCountOfCube(Cube.Color.GREEN)
             )
         )
     }
+
+private fun Game.getMaxCountOfCube(color: Cube.Color) = setsOfCubePulled.maxOf { pull ->
+    pull.filter { cube -> cube.color == color }.maxOfOrNull { it.count } ?: 0
 }
